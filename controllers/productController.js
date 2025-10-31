@@ -55,14 +55,17 @@ exports.createProduct = async (req, res) => {
     // 3. Si todo está OK, creamos el producto
     try {
         const { nombre, precio, descripcion } = req.body;
+
         // Hacemos un 'replace' para que la ruta sea relativa 
-        const imagenPath = req.file.path.replace(/\\/g, "/").replace("uploads/", "/uploads/");
+        // (cambiamos a URL pública estable: /uploads/<filename>)
+        // Nota: req.file.filename viene de multer y es el nombre final ya guardado.
+        const imagenPath = ('/uploads/' + req.file.filename).replace(/\\/g, "/");
 
         const newProduct = new Product({
             nombre,
             precio,
             descripcion,
-            imagen: imagenPath // Guardamos la ruta relativa
+            imagen: imagenPath // Guardamos la ruta relativa (consumible por el navegador)
         });
         
         await newProduct.save(); // Guardamos en MongoDB
@@ -156,7 +159,8 @@ exports.updateProduct = async (req, res) => {
             });
             
             // 2. Asignamos la ruta de la imagen NUEVA
-            imagenPath = req.file.path.replace(/\\/g, "/").replace("uploads/", "/uploads/");
+            // (URL pública estable: /uploads/<filename>)
+            imagenPath = ('/uploads/' + req.file.filename).replace(/\\/g, "/");
         }
 
         // 3. Actualizamos los datos en la BD
