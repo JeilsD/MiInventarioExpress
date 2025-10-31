@@ -6,9 +6,9 @@ Este es un proyecto de aplicación web full-stack para la gestión de un inventa
 
 ## 🧑‍💻 Autor
 
-* **Nombre:** =
-* **Curso/Materia:** =
-* **Profesor:** =
+* **Nombre:** = David Beltran
+* **Curso/Materia:** = Aplicaciones web
+* **Profesor:** = Rodrigo Trufiño
 
 ---
 
@@ -81,7 +81,7 @@ Sigue estos pasos para levantar el proyecto localmente:
 (O simplemente, tener la carpeta del proyecto).
 
 ### 2. Instalar Dependencias
-Abre una terminal en la raíz del proyecto y ejecuta:
+Para usar la pagina, abre una terminal en la raíz del proyecto y ejecuta:
 ```bash
 npm install
 

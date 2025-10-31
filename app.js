@@ -25,13 +25,14 @@ app.use(express.json()); // Permite al servidor entender JSON
 app.use(express.urlencoded({ extended: true })); // Permite al servidor entender datos de formularios
 app.use(express.static(path.join(__dirname, 'public'))); // Sirve archivos estáticos (CSS, JS del cliente)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Hace la carpeta 'uploads' accesible (Tarea 6)
+// Nota: esta línea es clave para que <img src="/uploads/..."> funcione en el navegador.
 
 // --- Configuración de Sesión (Tarea 7) ---
 // La movemos a una variable para poder compartirla con Socket.io
 const sessionMiddleware = session({
-    secret: process.env.SESSION_SECRET || 'unsecretoSuperDificil', // Secreto para firmar la cookie
-    resave: false, // No vuelve a guardar si no hay cambios
-    saveUninitialized: false, // No guarda sesiones vacías
+    secret: process.env.SESSION_SECRET || 'unsecretoSuperDificil', // Secreto para firmar la cookie
+    resave: false, // No vuelve a guardar si no hay cambios
+    saveUninitialized: false, // No guarda sesiones vacías
 });
 
 app.use(sessionMiddleware); // Express usa la sesión
@@ -43,19 +44,18 @@ io.engine.use(sessionMiddleware);
 // --- Middleware Global para Vistas ---
 // Esto pasa variables a TODAS las plantillas Handlebars
 app.use((req, res, next) => {
-    // res.locals son variables disponibles en todas las vistas
-    res.locals.isAuthenticated = req.session.isLoggedIn; // true o undefined
-    res.locals.userEmail = req.session.user ? req.session.user.email : null;
-    next();
+    // res.locals son variables disponibles en todas las vistas
+    res.locals.isAuthenticated = req.session.isLoggedIn; // true o undefined
+    res.locals.userEmail = req.session.user ? req.session.user.email : null;
+    next();
 });
 // --- FIN DE LO AÑADIDO ---
 
-
 // --- 4. Configuración de Handlebars (Tarea 9) ---
 const hbs = create({
-    extname: '.hbs', // Usaremos la extensión .hbs para los archivos
-    defaultLayout: 'main', // Plantilla principal por defecto
-    layoutsDir: path.join(__dirname, 'views/layouts') // Dónde buscar las plantillas
+    extname: '.hbs', // Usaremos la extensión .hbs para los archivos
+    defaultLayout: 'main', // Plantilla principal por defecto
+    layoutsDir: path.join(__dirname, 'views/layouts') // Dónde buscar las plantillas
 });
 
 app.engine('.hbs', hbs.engine); // Registra el motor de plantillas
@@ -64,18 +64,18 @@ app.set('views', path.join(__dirname, 'views')); // Dónde están las vistas
 
 // --- 5. Conexión a MongoDB ---
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('Base de datos conectada 👍')) 
-  .catch(err => {
-    // Esto mostrará el error si falla
-    console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-    console.error('Error de conexión a DB:', err.message);
-    console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-  });
+  .then(() => console.log('Base de datos conectada 👍')) 
+  .catch(err => {
+    // Esto mostrará el error si falla
+    console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+    console.error('Error de conexión a DB:', err.message);
+    console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+  });
 
 // --- 6. Rutas ---
 app.get('/', (req, res) => { 
-    // Renderiza la vista 'home.hbs' 
-    res.render('home', { title: 'Inicio' }); 
+    // Renderiza la vista 'home.hbs' 
+    res.render('home', { title: 'Inicio' }); 
 });
 
 // --- AÑADIDO: Ruta para la vista del chat (Tarea 10) ---
@@ -86,7 +86,7 @@ app.get('/chat', isAuth, (req, res) => {
 
 // Le decimos a Express que use el enrutador de productos
 // para todas las URLs que comiencen con '/products'
-app.use('/products', productRoutes); //  Usa el enrutador de productos
+app.use('/products', productRoutes); //  Usa el enrutador de productos
 
 // Usa el enrutador de autenticación
 app.use('/', authRoutes); // Usa las rutas de /login, /register, /logout
@@ -136,5 +136,5 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 3000;
 // --- CAMBIADO: Usamos 'server.listen' en lugar de 'app.listen' ---
 server.listen(PORT, () => {
-    console.log(`Servidor (y Socket.io) corriendo en http://localhost:${PORT}`);
+    console.log(`Servidor (y Socket.io) corriendo en http://localhost:${PORT}`);
 });
